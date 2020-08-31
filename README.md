@@ -18,7 +18,15 @@ Brief guide on how to install and run this project locally.
 
 #### Clone the project
 
-To install the project locally simply run: <br /> `git clone git@github.com:codingAngarita/bookMe.git` or `git clone https://github.com/codingAngarita/bookMe.git`.
+To download the project simply run: 
+
+`git clone git@github.com:codingAngarita/bookMe.git`
+
+or
+
+`git clone https://github.com/codingAngarita/bookMe.git`
+
+Then move into the created directory `cd bookMe`
 
 #### Ruby Version
 
