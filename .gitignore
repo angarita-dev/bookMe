@@ -28,3 +28,6 @@
 
 # Ignore vim temp files
 *.swp
+
+# Ignore .env file
+.env
