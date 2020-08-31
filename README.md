@@ -51,7 +51,7 @@ This project uses [dotenv](https://github.com/bkeepers/dotenv) to manage databas
 Create a `.env` file on the root of the project.
 
 ```
-# ./.env
+# .env
 
 BOOKME_DATABASE_USER=YOUR_DB_ROLE_NAME
 BOOKME_DATABASE_PASSWORD=YOUR_DB_ROLE_PASSWORD
