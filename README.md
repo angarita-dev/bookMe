@@ -94,4 +94,4 @@ You can now start the server by running `rails s`
 
 Check the ERD (Entity Relationship Design) here:
 
-![ERD](https://i.imgur.com/PdfHHII.jpg)
+![ERD](https://i.imgur.com/g7XDpsE.jpg)
