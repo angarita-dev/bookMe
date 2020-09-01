@@ -2,7 +2,7 @@
 
 API service to book rooms/work-spaces using Ruby on Rails.
 
-### Tech stack
+## Tech stack
 
 * Ruby on Rails as REST API.
 * Deployed on [Heroku.](https://www.heroku.com/)
@@ -89,3 +89,9 @@ Once you are done following the previous steps you should run:
 2. `rake db:migrate` to run any pending migrations.
 
 You can now start the server by running `rails s`
+
+## Project details
+
+Check the ERD (Entity Relationship Design) here:
+
+![ERD](https://i.imgur.com/ZWKEriT.jpg)
