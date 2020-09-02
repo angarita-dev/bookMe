@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     @user = User.create(user_create_params)
     if @user.valid?
       token = encode_token({ user_id: @user.id })
-      response_json = { user: @user, token: token }
+      response_json = { user: UserSerializer.new(@user), token: token }
       render json: response_json, status: :created
     else
       missing_params = check_params(
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
     if @user&.authenticate(params[:password])
       token = encode_token({ user_id: @user.id })
-      response_json = { user: @user, token: token }
+      response_json = { user: UserSerializer.new(@user), token: token }
       response_code = :ok
     else
       response_json = { error: 'Incorrect credentials' }
