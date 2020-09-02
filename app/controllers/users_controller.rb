@@ -56,8 +56,6 @@ end
 
 class Users::ReservationsController < ApplicationController
   def index
-    params = reservations_params
-
     response_json = @user.reservations.all
     status_code = :ok
 
