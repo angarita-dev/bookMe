@@ -1,3 +1,9 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resource :users, only: [:create]
+  resources :rooms, only: %i[index show]
+  post 'users/login', to: 'users#login'
+
+  namespace :users do
+    resources :reservations, only: %i[index show create destroy]
+  end
 end
