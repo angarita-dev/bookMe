@@ -36,9 +36,11 @@ RSpec.describe 'Users', type: :request do
         expect(user['email']).to eq(created_user.email)
       end
 
-      it "creates doesn't return password_digest" do
-        user = json['user']
-        expect(user['password_digest']).not_to exist
+      it 'returns user serialized' do
+        created_user = User.last
+        serialized_user = UserSerializer.new(created_user).attributes.stringify_keys
+
+        expect(json['user']).to eq(serialized_user)
       end
 
       it 'returns status code 201' do
@@ -67,7 +69,14 @@ RSpec.describe 'Users', type: :request do
 
       it 'logs in' do
         user = json['user']
+
         expect(user['email']).to eq(user_email)
+      end
+
+      it 'returns user serialized' do
+        serialized_user = UserSerializer.new(user).attributes.stringify_keys
+
+        expect(json['user']).to eq(serialized_user)
       end
 
       it 'returns status code 200' do
