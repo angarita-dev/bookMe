@@ -18,7 +18,6 @@ RSpec.describe 'Users', type: :request do
   let(:reservation_id) { reservation.id }
   let(:user_token) { login user_email, user_password }
 
-
   describe 'POST /users #create' do
     valid_attributes = {
       name: 'Jhon Doe',
@@ -79,7 +78,7 @@ RSpec.describe 'Users', type: :request do
     context 'invalid login' do
       before do
         post '/users/login',
-          params: { email: user.email, password: 'wrong_password' }
+             params: { email: user.email, password: 'wrong_password' }
       end
 
       it 'returns incorrect credentials error' do
@@ -96,7 +95,7 @@ RSpec.describe 'Users', type: :request do
     context 'valid' do
       before do
         get '/users/reservations',
-          headers: token_headers(user_token)
+            headers: token_headers(user_token)
       end
 
       it 'returns user reservation list' do
@@ -126,7 +125,7 @@ RSpec.describe 'Users', type: :request do
     context 'valid' do
       before do
         get "/users/reservations/#{reservation_id}",
-          headers: token_headers(user_token)
+            headers: token_headers(user_token)
       end
 
       it 'returns reservation' do
@@ -154,7 +153,7 @@ RSpec.describe 'Users', type: :request do
     context 'invalid reservations index' do
       before do
         get "/users/reservations/#{reservation_id + 1}",
-          headers: token_headers(user_token)
+            headers: token_headers(user_token)
       end
 
       it 'returns error message' do
@@ -171,7 +170,7 @@ RSpec.describe 'Users', type: :request do
     context 'valid' do
       before do
         delete "/users/reservations/#{reservation_id}",
-          headers: token_headers(user_token)
+               headers: token_headers(user_token)
       end
 
       it 'returns status code 204' do
@@ -194,7 +193,7 @@ RSpec.describe 'Users', type: :request do
     context 'invalid reservation id' do
       before do
         delete "/users/reservations/#{reservation_id + 1}",
-          headers: token_headers(user_token)
+               headers: token_headers(user_token)
       end
 
       it 'returns error message' do
