@@ -12,7 +12,7 @@ module RequestSpecHelper
   end
 
   # Generates headers given a token
-  def token_headers token
+  def token_headers(token)
     { 'Authorization': "Bearer #{token}" }
   end
 end
