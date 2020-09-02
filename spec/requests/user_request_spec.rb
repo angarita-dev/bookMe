@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Users', type: :request do
-  let!(:user_password) { 'S3cur3_@_p4ssw0rd' }
+  let(:user_password) { 'S3cur3_@_p4ssw0rd' }
   let!(:user) { create(:user, password: user_password) }
   let!(:room) { create(:room) }
   let!(:reservation) do
@@ -16,6 +16,8 @@ RSpec.describe 'Users', type: :request do
 
   let(:user_email) { user.email }
   let(:reservation_id) { reservation.id }
+  let(:user_token) { login user_email, user_password }
+
 
   describe 'POST /users #create' do
     valid_attributes = {
@@ -26,16 +28,18 @@ RSpec.describe 'Users', type: :request do
 
     invalid_attributes = { name: 'Jhon Doe', password: 's3cur3_p4ssw0rd' }
 
-    context 'valid request' do
+    context 'valid' do
       before { post '/users', params: valid_attributes }
 
       it 'creates user' do
         created_user = User.last
-        expect(json['email']).to eq(created_user.email)
+        user = json['user']
+        expect(user['email']).to eq(created_user.email)
       end
 
       it "creates doesn't return password_digest" do
-        expect(json['password_digest']).not_to exist
+        user = json['user']
+        expect(user['password_digest']).not_to exist
       end
 
       it 'returns status code 201' do
@@ -43,7 +47,7 @@ RSpec.describe 'Users', type: :request do
       end
     end
 
-    context 'invalid request' do
+    context 'Missing params' do
       before { post '/users', params: invalid_attributes }
 
       it 'fails to create user' do
@@ -63,7 +67,8 @@ RSpec.describe 'Users', type: :request do
       end
 
       it 'logs in' do
-        expect(json['email']).to eq(user_email)
+        user = json['user']
+        expect(user['email']).to eq(user_email)
       end
 
       it 'returns status code 200' do
@@ -73,7 +78,8 @@ RSpec.describe 'Users', type: :request do
 
     context 'invalid login' do
       before do
-        post '/users/login', params: { email: user.email, password: 'wrong_password' }
+        post '/users/login',
+          params: { email: user.email, password: 'wrong_password' }
       end
 
       it 'returns incorrect credentials error' do
@@ -86,17 +92,14 @@ RSpec.describe 'Users', type: :request do
     end
   end
 
-  describe 'GET /users/reservations #index' do
-    context 'valid users reservations query' do
+  describe 'GET /users/reservations #index', :focus do
+    context 'valid' do
       before do
-        get '/users/reservations', params: {
-          email: user.email,
-          password: user_password,
-          format: :json
-        }
+        get '/users/reservations',
+          headers: token_headers(user_token)
       end
 
-      it 'returns reservation' do
+      it 'returns user reservation list' do
         expect(json).to_not be_empty
         expect(json.size).to eq(user.reservations.count)
       end
@@ -106,14 +109,8 @@ RSpec.describe 'Users', type: :request do
       end
     end
 
-    context 'invalid users reservations query' do
-      before do
-        get '/users/reservations', params: {
-          email: user.email,
-          password: 'wrong_password',
-          format: :json
-        }
-      end
+    context 'user not logged in' do
+      before { get '/users/reservations' }
 
       it 'returns error message' do
         expect(json['error']).to eq('Please log in.')
@@ -126,13 +123,10 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'GET /users/reservation #show' do
-    context 'valid users reservation query' do
+    context 'valid' do
       before do
-        get "/users/reservations/#{reservation_id}", params: {
-          email: user.email,
-          password: user_password,
-          format: :json
-        }
+        get "/users/reservations/#{reservation_id}",
+          headers: token_headers(user_token)
       end
 
       it 'returns reservation' do
@@ -145,13 +139,22 @@ RSpec.describe 'Users', type: :request do
       end
     end
 
-    context 'invalid users reservations query' do
+    context 'user not logged in' do
+      before { get "/users/reservations/#{reservation_id}" }
+
+      it 'returns error message' do
+        expect(json['error']).to eq('Please log in.')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+    end
+
+    context 'invalid reservations index' do
       before do
-        get "/users/reservations/#{reservation_id + 1}", params: {
-          email: user.email,
-          password: user_password,
-          format: :json
-        }
+        get "/users/reservations/#{reservation_id + 1}",
+          headers: token_headers(user_token)
       end
 
       it 'returns error message' do
@@ -165,13 +168,10 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'DELETE /users/reservation #destroy' do
-    context 'valid users reservation query' do
+    context 'valid' do
       before do
-        delete "/users/reservations/#{reservation_id}", params: {
-          email: user.email,
-          password: user_password,
-          format: :json
-        }
+        delete "/users/reservations/#{reservation_id}",
+          headers: token_headers(user_token)
       end
 
       it 'returns status code 204' do
@@ -179,13 +179,22 @@ RSpec.describe 'Users', type: :request do
       end
     end
 
-    context 'invalid users reservations query' do
+    context 'user not logged in' do
+      before { delete "/users/reservations/#{reservation_id}" }
+
+      it 'returns error message' do
+        expect(json['error']).to eq('Please log in.')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+    end
+
+    context 'invalid reservation id' do
       before do
-        delete "/users/reservations/#{reservation_id + 1}", params: {
-          email: user.email,
-          password: user_password,
-          format: :json
-        }
+        delete "/users/reservations/#{reservation_id + 1}",
+          headers: token_headers(user_token)
       end
 
       it 'returns error message' do
