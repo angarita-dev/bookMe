@@ -1,4 +1,6 @@
 class RoomsController < ApplicationController
+  skip_before_action :authorized, only: %i[index show]
+
   def index
     render json: Room.all, status: :ok
   end

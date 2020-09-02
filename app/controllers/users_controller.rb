@@ -1,8 +1,11 @@
 class UsersController < ApplicationController
+  skip_before_action :authorized, only: %i[create login]
+
   def create
     @user = User.create(user_create_params)
     if @user.valid?
-      response_json = @user
+      token = encode_token({ user_id: @user.id })
+      response_json = { user: @user, token: token }
       render json: response_json, status: :created
     else
       missing_params = check_params(
@@ -25,7 +28,8 @@ class UsersController < ApplicationController
     @user = User.find_by(email: params[:email])
 
     if @user&.authenticate(params[:password])
-      response_json = @user
+      token = encode_token({ user_id: @user.id })
+      response_json = { user: @user, token: token }
       response_code = :ok
     else
       response_json = { error: 'Incorrect credentials' }
@@ -53,25 +57,18 @@ end
 class Users::ReservationsController < ApplicationController
   def index
     params = reservations_params
-    @user = User.find_by(email: params[:email])
 
-    if @user&.authenticate(params[:password])
-      response_json = @user.reservations.all
-      status_code = :ok
-    else
-      response_json = { error: 'Please log in.' }
-      status_code = :unauthorized
-    end
+    response_json = @user.reservations.all
+    status_code = :ok
 
     render json: response_json, status: status_code
   end
 
   def show
     params = reservations_params
-    @user = User.find_by(email: params[:email])
+
     @reservation = Reservation.where(id: params[:id])
 
-    # Should authenticate
     if !@reservation.empty?
       response_json = @reservation.first
       response_code = :ok
@@ -85,12 +82,11 @@ class Users::ReservationsController < ApplicationController
 
   def destroy
     params = reservations_params
-    @user = User.find_by(email: params[:email])
+
     @reservation = Reservation.where(id: params[:id])
 
-    # Should authenticate
     if !@reservation.empty?
-      @reservation.destroy_all
+      @reservation.first.destroy
       response_json = {}
       response_code = :no_content
     else
@@ -104,6 +100,6 @@ class Users::ReservationsController < ApplicationController
   private
 
   def reservations_params
-    params.permit(:email, :password, :id)
+    params.permit(:id)
   end
 end
