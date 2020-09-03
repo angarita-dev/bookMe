@@ -8,13 +8,13 @@ RSpec.describe 'Users', type: :request do
     create(
       :reservation,
       user: user,
-      room: room,
-      start_time: DateTime.current,
-      end_time: DateTime.current + 2.hours
+      room: room
     )
   end
 
   let(:user_email) { user.email }
+  let(:user_id) { user.id }
+  let(:room_id) { room.id }
   let(:reservation_id) { reservation.id }
   let(:user_token) { login user_email, user_password }
 
@@ -87,7 +87,7 @@ RSpec.describe 'Users', type: :request do
     context 'invalid login' do
       before do
         post '/users/login',
-             params: { email: user.email, password: 'wrong_password' }
+          params: { email: user.email, password: 'wrong_password' }
       end
 
       it 'returns incorrect credentials error' do
@@ -96,121 +96,6 @@ RSpec.describe 'Users', type: :request do
 
       it 'returns status code 401' do
         expect(response).to have_http_status(401)
-      end
-    end
-  end
-
-  describe 'GET /users/reservations #index', :focus do
-    context 'valid' do
-      before do
-        get '/users/reservations',
-            headers: token_headers(user_token)
-      end
-
-      it 'returns user reservation list' do
-        expect(json).to_not be_empty
-        expect(json.size).to eq(user.reservations.count)
-      end
-
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-    end
-
-    context 'user not logged in' do
-      before { get '/users/reservations' }
-
-      it 'returns error message' do
-        expect(json['error']).to eq('Please log in.')
-      end
-
-      it 'returns status code 401' do
-        expect(response).to have_http_status(401)
-      end
-    end
-  end
-
-  describe 'GET /users/reservation #show' do
-    context 'valid' do
-      before do
-        get "/users/reservations/#{reservation_id}",
-            headers: token_headers(user_token)
-      end
-
-      it 'returns reservation' do
-        expect(json).to_not be_empty
-        expect(json['id']).to eq(reservation_id)
-      end
-
-      it 'returns status code 200' do
-        expect(response).to have_http_status(200)
-      end
-    end
-
-    context 'user not logged in' do
-      before { get "/users/reservations/#{reservation_id}" }
-
-      it 'returns error message' do
-        expect(json['error']).to eq('Please log in.')
-      end
-
-      it 'returns status code 401' do
-        expect(response).to have_http_status(401)
-      end
-    end
-
-    context 'invalid reservations index' do
-      before do
-        get "/users/reservations/#{reservation_id + 1}",
-            headers: token_headers(user_token)
-      end
-
-      it 'returns error message' do
-        expect(json['error']).to eq('Wrong reservation id')
-      end
-
-      it 'returns status code 400' do
-        expect(response).to have_http_status(400)
-      end
-    end
-  end
-
-  describe 'DELETE /users/reservation #destroy' do
-    context 'valid' do
-      before do
-        delete "/users/reservations/#{reservation_id}",
-               headers: token_headers(user_token)
-      end
-
-      it 'returns status code 204' do
-        expect(response).to have_http_status(204)
-      end
-    end
-
-    context 'user not logged in' do
-      before { delete "/users/reservations/#{reservation_id}" }
-
-      it 'returns error message' do
-        expect(json['error']).to eq('Please log in.')
-      end
-
-      it 'returns status code 401' do
-        expect(response).to have_http_status(401)
-      end
-    end
-
-    context 'invalid reservation id' do
-      before do
-        delete "/users/reservations/#{reservation_id + 1}",
-               headers: token_headers(user_token)
-      end
-
-      it 'returns error message' do
-        expect(json['error']).to eq('Wrong reservation id')
-      end
-
-      it 'returns status code 400' do
-        expect(response).to have_http_status(400)
       end
     end
   end
