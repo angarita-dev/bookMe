@@ -68,11 +68,9 @@ class ReservationsController < ApplicationController
   private
 
   def parse_date(date_string)
-    begin
-      DateTime.iso8601(date_string)
-    rescue
-      false
-    end
+    DateTime.iso8601(date_string)
+  rescue StandardError
+    false
   end
 
   def reservations_params

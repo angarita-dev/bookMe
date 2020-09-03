@@ -39,6 +39,22 @@ class UsersController < ApplicationController
     render json: response_json, status: response_code
   end
 
+  def update
+    if @user.update(user_create_params)
+      response_json = { user: UserSerializer.new(@user) }
+      response_code = :ok
+    else
+      response_json = { error: 'Changes are not valid' }
+      response_code = :bad_request
+    end
+
+    render json: response_json, status: response_code
+  end
+
+  def destroy
+    render json: { user: UserSerializer.new(@user.delete) }, status: :ok
+  end
+
   private
 
   def check_params(params, keys)
