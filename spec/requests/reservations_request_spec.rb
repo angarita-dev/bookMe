@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Reservations", type: :request do
+RSpec.describe 'Reservations', type: :request do
   let(:user_password) { 'S3cur3_@_p4ssw0rd' }
   let!(:user) { create(:user, password: user_password) }
   let!(:room) { create(:room) }
@@ -105,15 +105,42 @@ RSpec.describe "Reservations", type: :request do
           room_id: room_id
         }
 
-        post "/reservations",
-          params: params,
-          headers: token_headers(user_token)
+        post '/reservations',
+             params: params,
+             headers: token_headers(user_token)
       end
 
       it 'creates a reservation for the user' do
         created_reservation = Reservation.last
 
         expect(created_reservation.user.id).to eq(user_id)
+      end
+
+      it 'returns serialized reservation' do
+        created_reservation = Reservation.last
+
+        serialized_reservation = ReservationSerializer.new(created_reservation)
+        stringified_reservation = serialized_reservation.to_h.deep_stringify_keys
+
+        expect(json['reservation']).to eq(stringified_reservation)
+      end
+
+      it 'has status code 201' do
+        expect(response).to have_http_status(201)
+      end
+    end
+
+    context 'valid save' do
+      before do
+        params = {
+          start_time: start_time_string,
+          end_time: end_time_string,
+          room_id: room_id
+        }
+
+        post '/reservations',
+             params: params,
+             headers: token_headers(user_token)
       end
 
       it 'saves room correctly' do
@@ -137,10 +164,6 @@ RSpec.describe "Reservations", type: :request do
 
         expect(json['reservation']).to eq(stringified_reservation)
       end
-
-      it 'has status code 201' do
-        expect(response).to have_http_status(201)
-      end
     end
 
     context 'user not logged in' do
@@ -151,8 +174,8 @@ RSpec.describe "Reservations", type: :request do
           room_id: room_id
         }
 
-        post "/reservations",
-          params: params
+        post '/reservations',
+             params: params
       end
 
       it 'returns error message' do
@@ -171,9 +194,9 @@ RSpec.describe "Reservations", type: :request do
           end_time: end_time_string
         }
 
-        post "/reservations",
-          params: params,
-          headers: token_headers(user_token)
+        post '/reservations',
+             params: params,
+             headers: token_headers(user_token)
       end
 
       it 'return error message' do

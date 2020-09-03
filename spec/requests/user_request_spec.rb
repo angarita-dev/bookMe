@@ -12,8 +12,9 @@ RSpec.describe 'Users', type: :request do
     )
   end
 
-  let(:user_email) { user.email }
   let(:user_id) { user.id }
+  let(:user_name) { user.name }
+  let(:user_email) { user.email }
   let(:room_id) { room.id }
   let(:reservation_id) { reservation.id }
   let(:user_token) { login user_email, user_password }
@@ -87,11 +88,129 @@ RSpec.describe 'Users', type: :request do
     context 'invalid login' do
       before do
         post '/users/login',
-          params: { email: user.email, password: 'wrong_password' }
+             params: { email: user.email, password: 'wrong_password' }
       end
 
       it 'returns incorrect credentials error' do
         expect(json['error']).to eq('Incorrect credentials')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+    end
+  end
+
+  describe 'PUT /users #update' do
+    context 'valid update' do
+      before do
+        params = {
+          name: Faker::Name.name
+        }
+
+        put '/users',
+            headers: token_headers(user_token),
+            params: params
+      end
+
+      it 'updates name' do
+        user.reload
+        user = json['user']
+
+        expect(user['name']).to eq(user_name)
+      end
+
+      it 'returns new user serialized' do
+        user.reload
+        serialized_user = UserSerializer.new(user).attributes.stringify_keys
+
+        expect(json['user']).to eq(serialized_user)
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'invalid update' do
+      before do
+        new_user = create(:user)
+
+        used_email = new_user.email
+
+        params = {
+          email: used_email
+        }
+
+        put '/users',
+            headers: token_headers(user_token),
+            params: params
+      end
+
+      it 'returns parameters error' do
+        expect(json['error']).to eq('Changes are not valid')
+      end
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
+      end
+    end
+
+    context 'invalid not logged in update' do
+      before do
+        params = {
+          name: Faker::Name.name
+        }
+
+        put '/users',
+            params: params
+      end
+
+      it 'returns login error' do
+        expect(json['error']).to eq('Please log in.')
+      end
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+    end
+  end
+
+  describe 'DELETE /users #update' do
+    context 'valid' do
+      before do
+        delete '/users',
+               headers: token_headers(user_token)
+      end
+
+      it 'delete' do
+        user_query_result = User.where(id: user_id)
+        expect(user_query_result.empty?).to eq(true)
+      end
+
+      it 'returns old user serialized' do
+        serialized_user = UserSerializer.new(user).attributes.stringify_keys
+
+        expect(json['user']).to eq(serialized_user)
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'invalid not logged in delete' do
+      before do
+        params = {
+          name: Faker::Name.name
+        }
+
+        delete '/users',
+               params: params
+      end
+
+      it 'returns login error' do
+        expect(json['error']).to eq('Please log in.')
       end
 
       it 'returns status code 401' do
