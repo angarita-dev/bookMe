@@ -28,6 +28,15 @@ class ApplicationController < ActionController::API
     render json: error_json, status: :unauthorized unless logged_in?
   end
 
+  def admin?
+    admin_from_token
+  end
+
+  def admin_authorized
+    error_json = { error: 'Admin only action' }
+    render json: error_json, status: :unauthorized unless admin?
+  end
+
   private
 
   def decode_token
@@ -43,5 +52,9 @@ class ApplicationController < ActionController::API
   def user_from_token
     user_id = decoded_token[0]['user_id']
     @user = User.find_by(id: user_id)
+  end
+
+  def admin_from_token
+    decoded_token[0]['user_admin']
   end
 end
