@@ -4,7 +4,10 @@ class UsersController < ApplicationController
   def create
     @user = User.create(user_create_params)
     if @user.valid?
-      token = encode_token({ user_id: @user.id })
+      token = encode_token({
+                             user_id: @user.id,
+                             user_admin: @user.admin
+                           })
       response_json = { user: UserSerializer.new(@user), token: token }
       render json: response_json, status: :created
     else
@@ -28,7 +31,10 @@ class UsersController < ApplicationController
     @user = User.find_by(email: params[:email])
 
     if @user&.authenticate(params[:password])
-      token = encode_token({ user_id: @user.id })
+      token = encode_token({
+                             user_id: @user.id,
+                             user_admin: @user.admin
+                           })
       response_json = { user: UserSerializer.new(@user), token: token }
       response_code = :ok
     else
