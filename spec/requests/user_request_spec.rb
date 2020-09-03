@@ -80,6 +80,10 @@ RSpec.describe 'Users', type: :request do
         expect(json['user']).to eq(serialized_user)
       end
 
+      it 'returns token' do
+        expect(json['token']).to be_a(String)
+      end
+
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
