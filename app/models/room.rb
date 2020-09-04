@@ -7,5 +7,5 @@ class Room < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :capacity
   validates_numericality_of :capacity, greater_than: 0
-  validates_presence_of :private
+  validates_inclusion_of :private, in: [true, false]
 end
