@@ -4,7 +4,9 @@ class RoomsController < ApplicationController
   before_action :set_current_room, only: %i[update destroy]
 
   def index
-    render json: Room.all, status: :ok
+    serialized_rooms = Room.all.map { |room| RoomSerializer.new(room).attributes }
+    json_response = { rooms: serialized_rooms }
+    render json: json_response, status: :ok
   end
 
   def show
@@ -12,7 +14,7 @@ class RoomsController < ApplicationController
     @room = Room.where(id: params[:id])
 
     if !@room.empty?
-      response_json = @room.first
+      response_json = { room: RoomSerializer.new(@room.first) }
       response_status = :ok
     else
       response_json = { error: 'Wrong room id' }

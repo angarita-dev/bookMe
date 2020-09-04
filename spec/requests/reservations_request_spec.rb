@@ -57,7 +57,7 @@ RSpec.describe 'Reservations', type: :request do
 
       it 'returns reservation' do
         expect(json).to_not be_empty
-        expect(json['id']).to eq(reservation_id)
+        expect(json['reservation']['id']).to eq(reservation_id)
       end
 
       it 'returns status code 200' do

@@ -24,8 +24,8 @@ RSpec.describe 'Rooms', type: :request do
     before { get '/rooms' }
 
     it 'returns rooms list' do
-      expect(json).to_not be_empty
-      expect(json.size).to eq(Room.count)
+      expect(json['rooms']).to_not be_empty
+      expect(json['rooms'].size).to eq(Room.count)
     end
 
     it 'returns 200 code' do
@@ -38,7 +38,7 @@ RSpec.describe 'Rooms', type: :request do
       before { get "/rooms/#{first_room_id}" }
 
       it 'returns room info' do
-        expect(json['id']).to eq(first_room_id)
+        expect(json['room']['id']).to eq(first_room_id)
       end
 
       it 'returns status code 200' do

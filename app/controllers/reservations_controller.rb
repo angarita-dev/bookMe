@@ -1,6 +1,9 @@
 class ReservationsController < ApplicationController
   def index
-    response_json = @user.reservations.all
+    serialized_reservations = @user.reservations.all.map do |reservation|
+      ReservationSerializer.new(reservation).to_h
+    end
+    response_json = { reservations: serialized_reservations }
     status_code = :ok
 
     render json: response_json, status: status_code
@@ -12,7 +15,7 @@ class ReservationsController < ApplicationController
     reservation = Reservation.where(id: params[:id])
 
     if !reservation.empty?
-      response_json = reservation.first
+      response_json = { reservation: ReservationSerializer.new(reservation.first) }
       response_code = :ok
     else
       response_json = { error: 'Wrong reservation id' }
