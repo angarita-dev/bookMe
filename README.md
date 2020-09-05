@@ -2,17 +2,30 @@
 
 API service to book rooms/work-spaces using Ruby on Rails.
 
+#### Check a live version [here.](https://book-me-api-angarita-dev.herokuapp.com/)
+#### Check API documentation [here.](https://bookmeapi.docs.apiary.io/)
+#### Check front-end implementation of the project [here.](https://github.com/codingAngarita/bookMe-front-end)
+
+# Table of content
+1. [Tech stack](#tech-stack)
+2. [How to install](#how-to-install)
+    1. [Requirements](#requirements)
+    2. [Database](#database)
+    3. [Gems](#gems)
+3. [Project details](#project-details)
+
+
 ## Tech stack
 
 * Ruby on Rails as REST API.
 * Deployed on [Heroku.](https://www.heroku.com/)
 * Database [PostgreSQL.](https://www.postgresql.org/)
-* Frontend using [React](https://reactjs.org) & [Redux.](https://redux.js.org/)
 * Tests using [rspec](https://github.com/rspec/rspec-rails), [factory-bot](https://github.com/thoughtbot/factory_bot_rails), [shoulda-matchers](https://github.com/thoughtbot/shoulda-matchers), [database-cleaner](https://github.com/DatabaseCleaner/database_cleaner) & [faker.](https://github.com/faker-ruby/faker)
 
 ## How to install
 
-Brief guide on how to install and run this project locally.
+<details>
+  <summary>Brief guide on how to install and run this project locally.</summary>
 
 ### Requirements
 
@@ -90,8 +103,10 @@ Once you are done following the previous steps you should run:
 
 You can now start the server by running `rails s`
 
+</details>
+
 ## Project details
 
 Check the ERD (Entity Relationship Design) here:
 
-![ERD](https://i.imgur.com/g7XDpsE.jpg)
+![ERD](https://i.imgur.com/KcM0Kto.jpg)
