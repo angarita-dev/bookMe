@@ -54,7 +54,7 @@ class ReservationsController < ApplicationController
   def destroy
     params = reservations_params
 
-    @reservation = Reservation.where(id: params[:id])
+    @reservation = @user.reservations.where(id: params[:id])
 
     if !@reservation.empty?
       @reservation.first.destroy
