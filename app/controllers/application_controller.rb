@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::API
   before_action :authorized
 
-  SECRET_KEY = Rails.application.secrets.secret_key_base
+  SECRET_KEY = Rails.application.credentials.jwt[:secret_key]
 
   def encode_token(payload)
     JWT.encode(payload, SECRET_KEY)
