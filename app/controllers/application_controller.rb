@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :authorized
+  rescue_from ActionController::ParameterMissing, with: :render_missing_param
 
   SECRET_KEY = Rails.application.credentials.jwt[:secret_key]
 
@@ -35,6 +36,10 @@ class ApplicationController < ActionController::API
   def admin_authorized
     error_json = { error: 'Admin only action' }
     render json: error_json, status: :unauthorized unless admin?
+  end
+
+  def render_missing_param
+    render json: { error: 'Missing fields' }, status: 400
   end
 
   private
