@@ -6,7 +6,7 @@ class UsersController < ApplicationController
 
     @user = User.create(user_params)
     if @user.valid?
-      token = encode_token({ user_id: @user.id, user_admin: @user.admin})
+      token = encode_token({ user_id: @user.id, user_admin: @user.admin })
 
       response_json = { user: UserSerializer.new(@user), token: token }
       response_code = :created
@@ -38,7 +38,6 @@ class UsersController < ApplicationController
   end
 
   def update
-    params = user_params
     if @user.update(user_params)
       response_json = { user: UserSerializer.new(@user) }
       response_code = :ok
