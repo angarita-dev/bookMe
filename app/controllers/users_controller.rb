@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   skip_before_action :authorized, only: %i[create login]
 
   def create
-    @user = User.create(user_create_params)
+    @user = User.create(user_params)
     if @user.valid?
       token = encode_token({
                              user_id: @user.id,
@@ -46,7 +46,8 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update(user_create_params)
+    params = user_params
+    if @user.update(user_params)
       response_json = { user: UserSerializer.new(@user) }
       response_code = :ok
     else
@@ -67,11 +68,7 @@ class UsersController < ApplicationController
     keys.all? { |key| params.key? key }
   end
 
-  def user_create_params
-    params.permit(:email, :name, :password, :password_confirmation)
-  end
-
   def user_params
-    params.permit(:email, :password)
+    params.permit(:email, :name, :password, :password_confirmation)
   end
 end
