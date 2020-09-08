@@ -23,7 +23,8 @@ RSpec.describe 'Users', type: :request do
     valid_attributes = {
       name: 'Jhon Doe',
       email: 'testemail@email.com',
-      password: 's3cur3_p4ssw0rd'
+      password: 's3cur3_p4ssw0rd',
+      password_confirmation: 's3cur3_p4ssw0rd'
     }
 
     invalid_attributes = { name: 'Jhon Doe', password: 's3cur3_p4ssw0rd' }
