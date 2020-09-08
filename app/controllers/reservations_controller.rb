@@ -1,12 +1,14 @@
 class ReservationsController < ApplicationController
   def index
-    serialized_reservations = @user.reservations.all.map do |reservation|
-      ReservationSerializer.new(reservation).to_h
-    end
-    response_json = { reservations: serialized_reservations }
+    serialized_reservations = ActiveModelSerializers::SerializableResource.new(
+      @user.reservations.all,
+      each_serializer: ReservationSerializer
+    )
+
+    json_response = { reservations: serialized_reservations }
     status_code = :ok
 
-    render json: response_json, status: status_code
+    render json: json_response, status: status_code
   end
 
   def show

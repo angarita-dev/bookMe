@@ -4,7 +4,10 @@ class RoomsController < ApplicationController
   before_action :set_current_room, only: %i[update destroy]
 
   def index
-    serialized_rooms = Room.all.map { |room| RoomSerializer.new(room).attributes }
+    serialized_rooms = ActiveModelSerializers::SerializableResource.new(
+      Room.all,
+      each_serializer: RoomSerializer
+    )
     json_response = { rooms: serialized_rooms }
     render json: json_response, status: :ok
   end
